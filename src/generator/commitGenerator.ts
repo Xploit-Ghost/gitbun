@@ -5,15 +5,38 @@ type FileInfo = {
   status: "A" | "M" | "D";
 };
 
-  export function generateCommitMessage(
-    type: string,
-    scope: string,
-    files: FileInfo[]
-  ): string {
-    const description = buildDescription(type, scope, files);
-    const message = scope ? `${type}(${scope}): ${description}` : `${type}: ${description}`;
-    return enforceRules(message);
+const DEFAULT_TEMPLATE = "{type}{scope}: {message}";
+
+export function generateCommitMessage(
+  type: string,
+  scope: string,
+  files: FileInfo[],
+  format: string = DEFAULT_TEMPLATE
+): string {
+  const description = buildDescription(type, scope, files);
+
+  const message = formatCommitMessage(format, {
+    type,
+    scope: scope ? `(${scope})` : "",
+    message: description
+  });
+
+  return enforceRules(message);
+}
+
+function formatCommitMessage(
+  template: string,
+  data: {
+    type: string;
+    scope: string;
+    message: string;
   }
+): string {
+  return template
+    .replace(/{type}/g, data.type)
+    .replace(/{scope}/g, data.scope)
+    .replace(/{message}/g, data.message);
+}
 
 function buildDescription(
   type: string,
@@ -63,17 +86,22 @@ function selectVerb(type: string): string {
 }
 
 function extractNoun(path: string): string {
-  // Extracts the main file/folder name as a noun, e.g. analyzer, diffScanner, etc.
   const parts = path.split("/");
-  // Prefer folder if inside a subfolder, else file name without extension
-  if (parts.length > 2) return parts[parts.length - 2];
+
+  if (parts.length > 2) {
+    return parts[parts.length - 2];
+  }
+
   return parts[parts.length - 1].replace(/\.[^/.]+$/, "");
 }
 
 function enforceRules(message: string): string {
   const parts = message.split(": ");
+
   if (parts.length === 2) {
-    parts[1] = parts[1].charAt(0).toLowerCase() + parts[1].slice(1);
+    parts[1] =
+      parts[1].charAt(0).toLowerCase() +
+      parts[1].slice(1);
   }
 
   let formatted = parts.join(": ");
