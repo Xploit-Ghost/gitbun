@@ -8,7 +8,7 @@ Fixes # (issue number)
 - [ ] Frontend styling/component update
 
 ## GSSoC '26 Contribution Details
-Please select the difficulty level that was assigned to you in the issue:
+Please select **only one** difficulty level that was assigned to you in the issue:
 - [ ] level:beginner
 - [ ] level:intermediate
 - [ ] level:advanced
