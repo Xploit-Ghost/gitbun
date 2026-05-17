@@ -15,13 +15,9 @@ function normalizeTemplate(template: string): string {
   ];
 
   // Required placeholders
-  if (
-    !template.includes("{type}") ||
-    !template.includes("{message}")
-  ) {
-    return DEFAULT_TEMPLATE;
-  }
-
+if (!template.includes("{message}")) {
+  return DEFAULT_TEMPLATE;
+}
   // Detect invalid placeholders like {mesage}
   const matches = template.match(/{.*?}/g) || [];
 
