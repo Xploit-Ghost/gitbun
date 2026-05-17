@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/nirvik34/gitbun/compare/v1.3.1...v1.3.2) (2026-05-17)
+
+
+### Bug Fixes
+
+* **llm:** add timeouts to Ollama API calls to prevent CLI freezing ([6f8436c](https://github.com/nirvik34/gitbun/commit/6f8436ca33bcbc027c7e3170152a16e42f7cb1d5))
+
 ## [1.3.1](https://github.com/nirvik34/gitbun/compare/v1.3.0...v1.3.1) (2026-05-16)
 
 
