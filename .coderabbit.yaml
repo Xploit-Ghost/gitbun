@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 
 language: en-US
 early_access: false
@@ -8,8 +9,16 @@ reviews:
   high_level_summary: true
   review_status: true
   collapse_walkthrough: false
-  
-  
+  auto_title_instructions: "Ensure PR titles follow Conventional Commits (feat, fix, chore, docs, etc.)"
+
+  auto_review:
+    enabled: true
+    ignore_title_keywords:
+      - WIP
+      - DRAFT
+      - DO NOT MERGE
+    drafts: false
+
   path_instructions:
     - path: "frontend/src/**/*.{ts,tsx}"
       instructions: |
@@ -33,15 +42,5 @@ reviews:
         - Verify CLI argument parsing logic using Commander.js.
         - Ensure the interactive prompts (Inquirer) are intuitive and handle escapes/interrupts.
 
-auto_review:
-  enabled: true
-  ignore_title_keywords:
-    - WIP
-    - DRAFT
-    - DO NOT MERGE
-  drafts: false
-
 chat:
   auto_reply: true
-commit_msg:
-  title_instructions: "Ensure PR titles follow Conventional Commits (feat, fix, chore, docs, etc.)"

@@ -68,21 +68,24 @@ export async function run(options: CliOptions) {
     });
   }
 
-  const filteredFiles = filterLowSignalFiles(enrichedFiles);
-  const prioritizedCandidates = sortBySignal(filteredFiles, getDiffForFile);
-  const prioritizedFiles = prioritizedCandidates.length > 0
-    ? prioritizedCandidates
-    : enrichedFiles;
-  const deduplicatedResult = deduplicateFiles(prioritizedFiles, 2);
+const filteredFiles = filterLowSignalFiles(enrichedFiles);
+const prioritizedCandidates = sortBySignal(filteredFiles, getDiffForFile);
+const prioritizedFiles = prioritizedCandidates.length > 0
+  ? prioritizedCandidates
+  : enrichedFiles;
+const MIN_GROUP_SIZE = 2;
+const deduplicatedResult = deduplicateFiles(prioritizedFiles, MIN_GROUP_SIZE);
 
-  const scope = detectScope(prioritizedFiles.map(f => f.path));
-  const type = await classifyCommitType(prioritizedFiles);
-  const summary = generateSummaryFromResult(deduplicatedResult);
+const scope = detectScope(prioritizedFiles.map(f => f.path));
+const type = await classifyCommitType(prioritizedFiles);
+const summary = generateSummaryFromResult(deduplicatedResult);
 
-  let commitMessage = generateCommitMessage(type, scope, prioritizedFiles);
 
-  // Load config
-  const config = await loadConfig();
+// Load config
+const config = await loadConfig();
+
+let commitMessage = generateCommitMessage(type, scope, prioritizedFiles);
+
 
   // AI enhancement (optional)
   if (options.ai) {
