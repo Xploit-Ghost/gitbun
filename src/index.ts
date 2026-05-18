@@ -84,7 +84,7 @@ const summary = generateSummaryFromResult(deduplicatedResult);
 // Load config
 const config = await loadConfig();
 
-let commitMessage = generateCommitMessage(type, scope, prioritizedFiles);
+let commitMessage = generateCommitMessage(type, scope, prioritizedFiles, config.format);
 
 
   // AI enhancement (optional)
