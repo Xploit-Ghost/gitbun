@@ -1,13 +1,20 @@
 // src/index.ts
 import chalk from "chalk";
 import ora from "ora";
+import { execFileSync } from "node:child_process";
 
 import { isGitRepo } from "./git/checkRepo";
 import { getStagedFiles } from "./git/getStagedFiles";
 import { getDiffStats } from "./git/getDiffStats";
 import { detectScope } from "./analyzer/scopeDetector";
 import { classifyCommitType } from "./analyzer/typeClassifier";
-import { generateSummary } from "./analyzer/summarizer";
+import { generateSummaryFromResult } from "./analyzer/summarizer";
+import {
+  filterLowSignalFiles,
+  type FileChange,
+} from "./analyzer/fileFilter";
+import { sortBySignal } from "./analyzer/fileScorer";
+import { deduplicateFiles } from "./analyzer/fileDeduplicator";
 import { generateCommitMessage } from "./generator/commitGenerator";
 import { confirmCommit } from "./ui/interactive";
 import { commit } from "./git/commit";
@@ -23,6 +30,17 @@ interface CliOptions {
   auto?: boolean;
   verbose?: boolean;
   [key: string]: unknown;
+}
+
+function getDiffForFile(path: string): string {
+  try {
+    return execFileSync("git", ["diff", "--cached", "-U0", "--", path], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+  } catch {
+    return "";
+  }
 }
 
 export async function run(options: CliOptions) {
@@ -42,7 +60,7 @@ export async function run(options: CliOptions) {
   }
 
   // Enrich file stats
-  const enrichedFiles = [];
+  const enrichedFiles: FileChange[] = [];
 
   for (const file of stagedFiles) {
     const stats = await getDiffStats(file.path);
@@ -54,57 +72,81 @@ export async function run(options: CliOptions) {
     });
   }
 
-  // --- Semantic Analysis (AST-based) ---
-  let semanticEvents: SemanticEvent[] = [];
-  // Only run if AI is enabled (or we can always run – decide based on config)
-  if (options.ai !== false) {
-    try {
-      const filePaths = enrichedFiles.map((f) => f.path);
+// --- Semantic Analysis (AST-based) ---
+let semanticEvents: SemanticEvent[] = [];
 
-      const semanticResult = await analyzeSemanticChanges(filePaths);
+// Run semantic analysis
+if (options.ai !== false) {
+  try {
+    const filePaths = enrichedFiles.map((f) => f.path);
 
-      if (!semanticResult.skipped && semanticResult.events.length > 0) {
-        semanticEvents = semanticResult.events;
+    const semanticResult = await analyzeSemanticChanges(filePaths);
 
-        if (options.verbose) {
-          console.log(
-            chalk.dim(
-              `[semantic] Detected ${semanticEvents.length} structural changes`,
-            ),
-          );
-        }
-      } else if (options.verbose && semanticResult.skipped) {
-        console.log(
-          chalk.dim("[semantic] Analysis skipped (timeout or error)"),
-        );
-      }
-    } catch {
+    if (!semanticResult.skipped && semanticResult.events.length > 0) {
+      semanticEvents = semanticResult.events;
+
       if (options.verbose) {
-        console.warn(
-          chalk.yellow(
-            "[semantic] Semantic analysis failed, falling back to diff-based analysis",
+        console.log(
+          chalk.dim(
+            `[semantic] Detected ${semanticEvents.length} structural changes`,
           ),
         );
       }
+    } else if (options.verbose && semanticResult.skipped) {
+      console.log(
+        chalk.dim("[semantic] Analysis skipped (timeout or error)"),
+      );
+    }
+  } catch {
+    if (options.verbose) {
+      console.warn(
+        chalk.yellow(
+          "[semantic] Semantic analysis failed, falling back to diff-based analysis",
+        ),
+      );
     }
   }
+}
 
-  const scope = detectScope(enrichedFiles.map((f) => f.path));
-  const type = await classifyCommitType(enrichedFiles);
-  // Generate summary string for AI fallback (still needed for enhanceCommit)
-  const summary = generateSummary(enrichedFiles, semanticEvents);
+const filteredFiles = filterLowSignalFiles(enrichedFiles);
+
+const prioritizedCandidates = sortBySignal(
+  filteredFiles,
+  getDiffForFile,
+);
+
+const prioritizedFiles =
+  prioritizedCandidates.length > 0
+    ? prioritizedCandidates
+    : enrichedFiles;
+
+const MIN_GROUP_SIZE = 2;
+
+const deduplicatedResult = deduplicateFiles(
+  prioritizedFiles,
+  MIN_GROUP_SIZE,
+);
+
+const scope = detectScope(
+  prioritizedFiles.map((f) => f.path),
+);
+
+const type = await classifyCommitType(prioritizedFiles);
+
+const summary = generateSummaryFromResult(
+  deduplicatedResult,
+);
 
   // Load config
   const config = await loadConfig();
 
-  // Generate commit message, now with semantic events
-  let commitMessage = generateCommitMessage(
-    type,
-    scope,
-    enrichedFiles,
-    config.format,
-    semanticEvents, // pass events for richer message
-  );
+let commitMessage = generateCommitMessage(
+  type,
+  scope,
+  prioritizedFiles,
+  config.format,
+  semanticEvents,
+);
 
   // AI enhancement (optional)
   if (options.ai) {

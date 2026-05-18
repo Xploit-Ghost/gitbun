@@ -1,3 +1,24 @@
+## [1.5.1](https://github.com/nirvik34/gitbun/compare/v1.5.0...v1.5.1) (2026-05-18)
+
+
+### Bug Fixes
+
+* **llm:** support custom Ollama host URLs via environment variables ([#17](https://github.com/nirvik34/gitbun/issues/17)) ([812b56c](https://github.com/nirvik34/gitbun/commit/812b56c95493730c44c31a3e36da2a84aca0cb89))
+
+# [1.5.0](https://github.com/nirvik34/gitbun/compare/v1.4.0...v1.5.0) (2026-05-18)
+
+
+### Bug Fixes
+
+* define MIN_GROUP_SIZE constant and resolve merge conflict ([273c46f](https://github.com/nirvik34/gitbun/commit/273c46fff5cf70196b61f4f40fa860002fb16f34))
+* pass config.format to generateCommitMessage ([d00c400](https://github.com/nirvik34/gitbun/commit/d00c4001d74b28a86e0425e26fbb81a3fb29cb00))
+* **security:** replace execSync with execFileSync to prevent command injection ([2dc662e](https://github.com/nirvik34/gitbun/commit/2dc662e0b1e3820be23a9b41b8a4cfb0e41832a4))
+
+
+### Features
+
+* **analyzer:** improve fallback diff summarization ([9a39117](https://github.com/nirvik34/gitbun/commit/9a39117f7aaf82e644ada59e7438cea2f09d2eb9))
+
 # [1.4.0](https://github.com/nirvik34/gitbun/compare/v1.3.2...v1.4.0) (2026-05-17)
 
 
