@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/nirvik34/gitbun/compare/v1.6.0...v1.7.0) (2026-05-19)
+
+
+### Features
+
+* **cli:** added progress spinners ([83488ac](https://github.com/nirvik34/gitbun/commit/83488acf216cf61cfef7c19d87ec0851bc8cc3da))
+
 # [1.6.0](https://github.com/nirvik34/gitbun/compare/v1.5.1...v1.6.0) (2026-05-19)
 
 
