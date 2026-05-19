@@ -1,3 +1,15 @@
+# [1.6.0](https://github.com/nirvik34/gitbun/compare/v1.5.1...v1.6.0) (2026-05-19)
+
+
+### Bug Fixes
+
+* harden vscode gitbun runner ([987cd54](https://github.com/nirvik34/gitbun/commit/987cd543533b2fef64ac2ab5492ac29da3b5fd27))
+
+
+### Features
+
+* add gitbun vscode extension scaffold ([97ee5ae](https://github.com/nirvik34/gitbun/commit/97ee5ae54898e100aa6c9a37e630ba8789a5d033))
+
 ## [1.5.1](https://github.com/nirvik34/gitbun/compare/v1.5.0...v1.5.1) (2026-05-18)
 
 
