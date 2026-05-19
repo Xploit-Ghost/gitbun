@@ -1,3 +1,15 @@
+# [1.8.0](https://github.com/nirvik34/gitbun/compare/v1.7.0...v1.8.0) (2026-05-19)
+
+
+### Bug Fixes
+
+* **analyzer:** address review feedback for language profiles ([ad9ba29](https://github.com/nirvik34/gitbun/commit/ad9ba296857b7cfdacd199a489be281643bdc4e9))
+
+
+### Features
+
+* **analyzer:** add modular multi-language analyzer support ([4099c52](https://github.com/nirvik34/gitbun/commit/4099c52b71ee84174018da75d899cb99f2c8cdd8))
+
 # [1.7.0](https://github.com/nirvik34/gitbun/compare/v1.6.0...v1.7.0) (2026-05-19)
 
 
