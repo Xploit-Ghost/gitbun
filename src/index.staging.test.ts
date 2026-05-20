@@ -1,23 +1,44 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const execFileSyncMock = vi.fn();
-const promptMock = vi.fn();
-const isGitRepoMock = vi.fn();
-const getStagedFilesMock = vi.fn();
-const getDiffStatsMock = vi.fn();
-const classifyCommitTypeMock = vi.fn();
-const loadConfigMock = vi.fn();
-const commitMock = vi.fn();
-const confirmCommitMock = vi.fn();
-const enhanceCommitMock = vi.fn();
-const isOllamaRunningMock = vi.fn();
-const getBestModelMock = vi.fn();
-const detectScopeMock = vi.fn();
-const generateSummaryFromResultMock = vi.fn();
-const filterLowSignalFilesMock = vi.fn();
-const sortBySignalMock = vi.fn();
-const deduplicateFilesMock = vi.fn();
-const generateCommitMessageMock = vi.fn();
+const {
+  execFileSyncMock,
+  promptMock,
+  isGitRepoMock,
+  getStagedFilesMock,
+  getDiffStatsMock,
+  classifyCommitTypeMock,
+  loadConfigMock,
+  commitMock,
+  confirmCommitMock,
+  enhanceCommitMock,
+  isOllamaRunningMock,
+  getBestModelMock,
+  detectScopeMock,
+  generateSummaryFromResultMock,
+  filterLowSignalFilesMock,
+  sortBySignalMock,
+  deduplicateFilesMock,
+  generateCommitMessageMock,
+} = vi.hoisted(() => ({
+  execFileSyncMock: vi.fn(),
+  promptMock: vi.fn(),
+  isGitRepoMock: vi.fn(),
+  getStagedFilesMock: vi.fn(),
+  getDiffStatsMock: vi.fn(),
+  classifyCommitTypeMock: vi.fn(),
+  loadConfigMock: vi.fn(),
+  commitMock: vi.fn(),
+  confirmCommitMock: vi.fn(),
+  enhanceCommitMock: vi.fn(),
+  isOllamaRunningMock: vi.fn(),
+  getBestModelMock: vi.fn(),
+  detectScopeMock: vi.fn(),
+  generateSummaryFromResultMock: vi.fn(),
+  filterLowSignalFilesMock: vi.fn(),
+  sortBySignalMock: vi.fn(),
+  deduplicateFilesMock: vi.fn(),
+  generateCommitMessageMock: vi.fn(),
+}));
 
 vi.mock("node:child_process", () => ({
   execFileSync: execFileSyncMock,
