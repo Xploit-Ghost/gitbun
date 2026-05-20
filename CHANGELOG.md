@@ -1,3 +1,41 @@
+# [1.9.0](https://github.com/nirvik34/gitbun/compare/v1.8.0...v1.9.0) (2026-05-19)
+
+
+### Features
+
+* **cli:** add --dry-run flag to preview commit message without committing ([9640dc5](https://github.com/nirvik34/gitbun/commit/9640dc509baccd2afc65a4167a64cc6024ff9faa))
+
+# [1.8.0](https://github.com/nirvik34/gitbun/compare/v1.7.0...v1.8.0) (2026-05-19)
+
+
+### Bug Fixes
+
+* **analyzer:** address review feedback for language profiles ([ad9ba29](https://github.com/nirvik34/gitbun/commit/ad9ba296857b7cfdacd199a489be281643bdc4e9))
+
+
+### Features
+
+* **analyzer:** add modular multi-language analyzer support ([4099c52](https://github.com/nirvik34/gitbun/commit/4099c52b71ee84174018da75d899cb99f2c8cdd8))
+
+# [1.7.0](https://github.com/nirvik34/gitbun/compare/v1.6.0...v1.7.0) (2026-05-19)
+
+
+### Features
+
+* **cli:** added progress spinners ([83488ac](https://github.com/nirvik34/gitbun/commit/83488acf216cf61cfef7c19d87ec0851bc8cc3da))
+
+# [1.6.0](https://github.com/nirvik34/gitbun/compare/v1.5.1...v1.6.0) (2026-05-19)
+
+
+### Bug Fixes
+
+* harden vscode gitbun runner ([987cd54](https://github.com/nirvik34/gitbun/commit/987cd543533b2fef64ac2ab5492ac29da3b5fd27))
+
+
+### Features
+
+* add gitbun vscode extension scaffold ([97ee5ae](https://github.com/nirvik34/gitbun/commit/97ee5ae54898e100aa6c9a37e630ba8789a5d033))
+
 ## [1.5.1](https://github.com/nirvik34/gitbun/compare/v1.5.0...v1.5.1) (2026-05-18)
 
 
