@@ -177,18 +177,6 @@ function detectInterfaceChanges(
         },
       });
     }
-
-    if (added.length || removed.length) {
-      events.push({
-        type: "interface_change",
-        file: filePath,
-        entityName: name,
-        details: {
-          added: added.map((p) => p.name),
-          removed: removed.map((p) => p.name),
-        },
-      });
-    }
   }
 
   // Type aliases (simplified)
