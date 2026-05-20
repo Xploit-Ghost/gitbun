@@ -77,6 +77,9 @@ async function launchStagingUI(options: CliOptions) {
 
     await run(options);
   } catch (error) {
+    if (error instanceof CancellationError) {
+      throw error;
+    }
     console.error(chalk.red("Failed to launch staging UI:"), error);
     process.exit(1);
   }
