@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import ora from "ora";
+import inquirer from "inquirer";
 import { execFileSync } from "node:child_process";
 
 import { isGitRepo } from "./git/checkRepo";
@@ -30,6 +31,57 @@ interface CliOptions {
   [key: string]: unknown;
 }
 
+async function launchStagingUI(options: CliOptions) {
+  try {
+    const modifiedFiles = execFileSync("git", ["ls-files", "--modified"])
+      .toString()
+      .split("\n")
+      .filter(Boolean);
+    const untrackedFiles = execFileSync("git", [
+      "ls-files",
+      "--others",
+      "--exclude-standard",
+    ])
+      .toString()
+      .split("\n")
+      .filter(Boolean);
+    const unstagedFiles = [...modifiedFiles, ...untrackedFiles];
+
+    if (unstagedFiles.length === 0) {
+      console.log("No changes detected to commit.");
+      process.exit(0);
+    }
+
+    const { filesToStage } = await inquirer.prompt([{
+      type: "checkbox",
+      name: "filesToStage",
+      message: "No files staged. Select files to stage (Space=select, Enter=confirm):",
+      choices: unstagedFiles
+    }]);
+
+    if (filesToStage.length === 0) {
+      console.log("Nothing selected. Exiting.");
+      process.exit(0);
+    }
+
+    execFileSync("git", ["add", ...filesToStage], { stdio: "inherit" });
+
+    const verified = execFileSync("git", ["diff", "--cached", "--name-only"])
+      .toString()
+      .trim();
+
+    if (!verified) {
+      console.log(chalk.red("Staging failed. No files were staged."));
+      process.exit(1);
+    }
+
+    await run(options);
+  } catch (error) {
+    console.error(chalk.red("Failed to launch staging UI:"), error);
+    process.exit(1);
+  }
+}
+
 function getDiffForFile(path: string): string {
   try {
     return execFileSync("git", ["diff", "--cached", "-U0", "--", path], {
@@ -42,7 +94,6 @@ function getDiffForFile(path: string): string {
 }
 
 export async function run(options: CliOptions) {
-  // Ensure we are inside a Git repo
   const repo = await isGitRepo();
   if (!repo) {
     throw new ValidationError("Not inside a Git repository.");
@@ -51,7 +102,10 @@ export async function run(options: CliOptions) {
   const stagedFiles = await getStagedFiles();
 
   if (stagedFiles.length === 0) {
-    throw new ValidationError("No staged changes found.\nStage changes using: git add <file>");
+    console.log(chalk.yellow("No staged changes found."));
+    console.log("Stage changes using: git add <file>");
+    await launchStagingUI(options);
+    return;
   }
 
   const spinner = ora();
@@ -146,16 +200,12 @@ export async function run(options: CliOptions) {
     finalMessage = commitMessage;
   } else {
     const result = await confirmCommit(commitMessage);
-
     if (!result) {
       throw new CancellationError();
     }
-
     finalMessage = result;
   }
 
-  // Perform commit (git-native output)
   const output = await commit(finalMessage);
-
   console.log("\n" + output);
 }
