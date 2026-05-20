@@ -88,7 +88,7 @@ function detectScope(files: FileInfo[]): string {
 
 function generateSubject(files: FileInfo[]): string {
   const addedFiles = files.filter(
-    (f) => f.status === "A" && /\.(ts|js)$/.test(f.path),
+    (f) => f.status === "A" && /\.(ts|tsx|js|jsx)$/.test(f.path),
   );
   const modifiedFiles = files.filter((f) => f.status === "M");
   if (addedFiles.length > 0) {
