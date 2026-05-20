@@ -23,6 +23,13 @@ Follow these rules strictly:
 
 const getOllamaUrl = () => process.env.OLLAMA_HOST?.replace(/\/$/, "") || "http://localhost:11434";
 
+/**
+ * Enhances a commit message using Ollama LLM.
+ * @param originalMessage - The raw commit message
+ * @param summary - Diff summary context
+ * @param model - Ollama model name
+ * @param config - Gitbun config (may include customPrompt)
+ */
 export async function enhanceCommit(
   originalMessage: string,
   summary: string,
