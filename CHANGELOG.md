@@ -1,3 +1,15 @@
+# [1.11.0](https://github.com/nirvik34/gitbun/compare/v1.10.0...v1.11.0) (2026-05-21)
+
+
+### Bug Fixes
+
+* **config:** restore config fields and test custom prompts ([#31](https://github.com/nirvik34/gitbun/issues/31)) ([3096997](https://github.com/nirvik34/gitbun/commit/3096997e7812eb4fc278a28fc68cc79f72e50b6f))
+
+
+### Features
+
+* **config:** add customPrompt support via .gitbunrc ([#31](https://github.com/nirvik34/gitbun/issues/31)) ([0eeedba](https://github.com/nirvik34/gitbun/commit/0eeedba0d2961a1e37f63f522c73fcd1f9b5bf1a))
+
 # [1.10.0](https://github.com/nirvik34/gitbun/compare/v1.9.1...v1.10.0) (2026-05-21)
 
 
