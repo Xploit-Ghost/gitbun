@@ -140,6 +140,12 @@ export async function run(options: CliOptions) {
         }
         spinner.start(`Enhancing commit with AI (${selectedModel})...`);
         try {
+          commitMessage = await enhanceCommit(
+            commitMessage,
+            summary,
+            selectedModel,
+            config
+          );
           commitMessage = await enhanceCommit(commitMessage, summary, selectedModel);
           spinner.succeed(`Enhanced commit with AI (${selectedModel})`);
         } catch {
