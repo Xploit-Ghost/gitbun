@@ -54,12 +54,13 @@ vi.mock("inquirer", () => ({
   },
 }));
 
-vi.mock("chalk", () => ({
-  default: {
-    red: (message: string) => message,
-    yellow: (message: string) => message,
-  },
-}));
+vi.mock("node:child_process", async (importOriginal) => {
+  const actual = await importOriginal() as Record<string, any>;
+  return {
+    ...actual,
+    execFileSync: execFileSyncMock,
+  };
+});
 
 vi.mock("ora", () => ({
   default: () => ({
