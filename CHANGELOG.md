@@ -1,3 +1,17 @@
+# [1.12.0](https://github.com/nirvik34/gitbun/compare/v1.11.0...v1.12.0) (2026-05-21)
+
+
+### Bug Fixes
+
+* preserve node:child_process real exports in staging test mock ([9e9af35](https://github.com/nirvik34/gitbun/commit/9e9af35ae601113a8b97d07785ea0b6362c2c30c))
+* propagate CancellationError through launchStagingUI catch block ([df6f4c4](https://github.com/nirvik34/gitbun/commit/df6f4c407b6fa6c77f257bbba3b85e82aa576fac))
+* use vi.hoisted to fix mock hoisting in staging tests ([a701d81](https://github.com/nirvik34/gitbun/commit/a701d81c3c3322e2e561b8389ec789fe9b582048))
+
+
+### Features
+
+* add interactive file staging UI when no files are staged ([6841ff7](https://github.com/nirvik34/gitbun/commit/6841ff72e4fc93dc6b5fa8c4ad00cdc884ace9b6)), closes [#26](https://github.com/nirvik34/gitbun/issues/26)
+
 # [1.11.0](https://github.com/nirvik34/gitbun/compare/v1.10.0...v1.11.0) (2026-05-21)
 
 
