@@ -41,8 +41,7 @@ const {
 }));
 
 vi.mock("node:child_process", async (importOriginal) => {
-  const actual = await importOriginal();
-  return {
+  const actual = await importOriginal() as Record<string, any>;  return {
     ...actual,
     execFileSync: execFileSyncMock,
   };
