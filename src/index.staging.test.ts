@@ -40,9 +40,13 @@ const {
   generateCommitMessageMock: vi.fn(),
 }));
 
-vi.mock("node:child_process", () => ({
-  execFileSync: execFileSyncMock,
-}));
+vi.mock("node:child_process", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    execFileSync: execFileSyncMock,
+  };
+});
 
 vi.mock("inquirer", () => ({
   default: {
