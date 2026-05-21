@@ -1,3 +1,4 @@
+// src/index.ts
 import chalk from "chalk";
 import ora from "ora";
 import inquirer from "inquirer";
@@ -21,12 +22,15 @@ import { commit } from "./git/commit";
 import { enhanceCommit } from "./llm/ollamaEnhancer";
 import { loadConfig } from "./config/loadConfig";
 import { isOllamaRunning, getBestModel } from "./llm/checkOllama";
+import { analyzeSemanticChanges } from "./analyzer/semanticAnalyzer";
+import { SemanticEvent } from "./analyzer/semanticTypes";
 import { ValidationError, CancellationError } from "./utils/errors";
 
 interface CliOptions {
   ai?: boolean;
   model?: string;
   auto?: boolean;
+  verbose?: boolean;
   dryRun?: boolean;
   [key: string]: unknown;
 }
@@ -115,8 +119,8 @@ export async function run(options: CliOptions) {
   let commitMessage = "";
 
   try {
+    // --- Build enriched files (from main, but without spinner yet) ---
     const enrichedFiles: FileChange[] = [];
-    spinner.start("Analyzing staged changes...");
     for (const file of stagedFiles) {
       const stats = await getDiffStats(file.path);
       enrichedFiles.push({
@@ -127,57 +131,79 @@ export async function run(options: CliOptions) {
       });
     }
 
+    // --- Semantic analysis (from semantic branch) ---
+    let semanticEvents: SemanticEvent[] = [];
+    if (options.ai !== false) {
+      try {
+        const filePaths = enrichedFiles.map((f) => f.path);
+        const semanticResult = await analyzeSemanticChanges(filePaths);
+
+        if (!semanticResult.skipped && semanticResult.events.length > 0) {
+          semanticEvents = semanticResult.events;
+          if (options.verbose) {
+            console.log(
+              chalk.dim(
+                `[semantic] Detected ${semanticEvents.length} structural changes`
+              )
+            );
+          }
+        } else if (options.verbose && semanticResult.skipped) {
+          console.log(chalk.dim("[semantic] Analysis skipped (timeout or error)"));
+        }
+      } catch {
+        if (options.verbose) {
+          console.warn(
+            chalk.yellow(
+              "[semantic] Semantic analysis failed, falling back to diff-based analysis"
+            )
+          );
+        }
+      }
+    }
+
+    // --- File filtering & prioritisation (from both branches, identical) ---
     const filteredFiles = filterLowSignalFiles(enrichedFiles);
     const prioritizedCandidates = sortBySignal(filteredFiles, getDiffForFile);
     const prioritizedFiles =
       prioritizedCandidates.length > 0 ? prioritizedCandidates : enrichedFiles;
     const MIN_GROUP_SIZE = 2;
-    const deduplicatedResult = deduplicateFiles(
-      prioritizedFiles,
-      MIN_GROUP_SIZE
-    );
+    const deduplicatedResult = deduplicateFiles(prioritizedFiles, MIN_GROUP_SIZE);
 
     const scope = detectScope(prioritizedFiles.map((f) => f.path));
     const type = await classifyCommitType(prioritizedFiles);
     const summary = generateSummaryFromResult(deduplicatedResult);
 
-    spinner.succeed("Analyzing staged changes...");
-
-    // Load config
-    const config = await loadConfig();
-
+    // --- Generate commit message (pass semantic events) ---
     spinner.start("Generating commit message...");
+    const config = await loadConfig();
     commitMessage = generateCommitMessage(
       type,
       scope,
       prioritizedFiles,
-      config.format
+      config.format,
+      semanticEvents  // added from semantic branch
     );
     spinner.succeed("Generating commit message...");
 
-    // AI enhancement (optional)
+    // --- AI enhancement (optional, from both branches) ---
     if (options.ai) {
       const running = await isOllamaRunning();
-
       if (!running) {
-        console.log(
-          chalk.yellow("\nOllama is not running. Using rule-based commit.")
-        );
+        console.log(chalk.yellow("\nOllama is not running. Using rule-based commit."));
       } else {
         let selectedModel = options.model || config.model;
-
         if (!selectedModel) {
           selectedModel = (await getBestModel()) || "deepseek-coder:6.7b";
         }
-
         spinner.start(`Enhancing commit with AI (${selectedModel})...`);
-
         try {
           commitMessage = await enhanceCommit(
             commitMessage,
             summary,
-            selectedModel
+            selectedModel,
+            config
           );
+          commitMessage = await enhanceCommit(commitMessage, summary, selectedModel, config);
           spinner.succeed(`Enhanced commit with AI (${selectedModel})`);
         } catch {
           spinner.fail("AI enhancement failed");
@@ -190,15 +216,14 @@ export async function run(options: CliOptions) {
     process.exit(1);
   }
 
-  // Dry run: print message and exit without committing
+  // Dry run
   if (options.dryRun) {
     console.log("\n" + commitMessage + "\n");
     process.exit(0);
   }
 
-  // Confirmation flow
+  // Confirmation
   let finalMessage: string;
-
   if (options.auto) {
     finalMessage = commitMessage;
   } else {
@@ -209,6 +234,7 @@ export async function run(options: CliOptions) {
     finalMessage = result;
   }
 
+  // Perform commit
   const output = await commit(finalMessage);
   console.log("\n" + output);
 }

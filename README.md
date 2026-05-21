@@ -99,6 +99,14 @@ Gitbun uses [Cosmiconfig](https://github.com/cosmiconfig/cosmiconfig) to find se
 
 ```
 
+**Example `.gitbunrc`:**
+
+```json
+{
+  "customPrompt": "Always include the Jira ticket number in format [PROJ-123]."
+}
+```
+
 ---
 
 ## Fallback & Rule-Based Logic
