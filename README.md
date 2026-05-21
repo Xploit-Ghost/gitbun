@@ -35,6 +35,10 @@ npx gitbun
 
 ```
 
+> If no files are staged, Gitbun opens an interactive checkbox list of modified and untracked files.
+> Press `Space` to select files and `Enter` to confirm.
+> Gitbun stages your selection and continues generating the commit message.
+
 ---
 
 ## Installation
