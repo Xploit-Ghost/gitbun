@@ -1,4 +1,5 @@
 import { getLanguageProfile } from "./languageAnalyzer";
+import path from 'path';
 
 function detectFileScope(
   file: string
@@ -9,7 +10,8 @@ function detectFileScope(
     return profile.detectScope(file);
   }
 
-  const parts = file.split("/");
+const normalizedFile = path.normalize(file);
+const parts = normalizedFile.split(path.sep);
 
   const srcIndex = parts.indexOf("src");
 
