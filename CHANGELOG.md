@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/nirvik34/gitbun/compare/v1.12.0...v1.12.1) (2026-05-24)
+
+
+### Bug Fixes
+
+* **analyzer:** make path parsing and scope detection platform-safe on Windows ([0165703](https://github.com/nirvik34/gitbun/commit/0165703d22ccd8906414c508c5a1fd1d8d921f49))
+
 # [1.12.0](https://github.com/nirvik34/gitbun/compare/v1.11.0...v1.12.0) (2026-05-21)
 
 
