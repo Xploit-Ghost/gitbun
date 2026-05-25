@@ -1,0 +1,27 @@
+name: "Onboarding"
+
+on:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: "first interaction"
+        uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: |
+            ##  Welcome to Gitbun! 
+            @${{ github.event.issue.user.login }}, thank you for opening this issue. We appreciate you helping us improve!
+
+            **Quick Checklist:**
+            - [ ] Have you checked if a similar [issue](https://github.com/nirvik34/gitbun/issues) already exists?
+            - [ ] Have you read our [Contributing Guidelines](https://github.com/nirvik34/gitbun/blob/main/CONTRIBUTING.md)?
+            
+            A maintainer will review your report shortly. In the meantime, ensure your description provides enough context for us to help you!
+            
