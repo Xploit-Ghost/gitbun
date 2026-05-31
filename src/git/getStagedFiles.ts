@@ -2,10 +2,23 @@ import simpleGit from "simple-git";
 import fs from "fs";
 import path from "path";
 import ignore from "ignore";
+import { execSync } from "child_process";
 
 const git = simpleGit();
 
 export type FileStatus = "A" | "M" | "D";
+
+/**
+ * Helper function to safely fetch the root absolute path of the current Git repository.
+ */
+function getGitRepoRoot(): string {
+  try {
+    return execSync("git rev-parse --show-toplevel", { encoding: "utf8" }).trim();
+  } catch (error) {
+    // Fallback to process.cwd() if not inside a valid git repo
+    return process.cwd();
+  }
+}
 
 export async function getStagedFiles(): Promise<
   { path: string; status: FileStatus }[]
@@ -38,14 +51,16 @@ export async function getStagedFiles(): Promise<
 
   // --- GITBUNIGNORE FILTERING LOGIC ---
   const ig = ignore();
-  const rootDir = process.cwd();
-  const ignorePath = path.join(rootDir, ".gitbunignore");
+  
+  // FIXED: Now dynamically resolves the actual git repository root directory
+  const repoRoot = getGitRepoRoot();
+  const ignorePath = path.join(repoRoot, ".gitbunignore");
 
-  // 1. Check if .gitbunignore exists at the root[cite: 10]
+  // 1. Check if .gitbunignore exists at the root
   if (fs.existsSync(ignorePath)) {
     ig.add(fs.readFileSync(ignorePath).toString());
   } else {
-    // 2. Default out-of-the-box exclusions to save tokens[cite: 10]
+    // 2. Default out-of-the-box exclusions to save tokens
     ig.add([
       "package-lock.json",
       "yarn.lock",
